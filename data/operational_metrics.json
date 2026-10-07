@@ -1,0 +1,6 @@
+{
+  "t_before_minutes": 45.0,
+  "t_after_minutes": 1.5,
+  "status": "assumed",
+  "source_note": "Demo scenario only; pending real user timing study."
+}

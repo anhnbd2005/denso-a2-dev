@@ -1,0 +1,122 @@
+[
+  {
+    "test_id": "TC-001",
+    "user_role": "Kỹ sư vận hành",
+    "query": "Cụm tay gắp gantry pick-and-place trục Z bị rung mạnh ở cuối hành trình khi chạy tốc độ cao, làm rơi linh kiện. Xử lý thế nào?",
+    "expected_kb_id": "KB-MB-001",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "cộng hưởng dao động do tai bắt xi-lanh nhôm quá dài không có gân tăng cứng khi servo giảm tốc đột ngột",
+      "must_include_action": "bổ sung gân tăng cứng tam giác, đổi profile servo sang S-curve, khoét lỗ tổ ong giảm tự trọng",
+      "must_include_contraindication": "không tăng bề dày toàn bộ chi tiết nhôm vì quá tải động cơ servo"
+    }
+  },
+  {
+    "test_id": "TC-002",
+    "user_role": "Kỹ sư bảo dưỡng",
+    "query": "Cảm biến quang sợi quang ở trục cấp phôi B2 cứ chạy 1-2 tuần lại báo lỗi chập chờn. Có phải cảm biến bị hỏng không?",
+    "expected_kb_id": "KB-MNT-002",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "không phải hỏng cảm biến mà do luồng gió quạt tản nhiệt cuốn bụi dầu bám vào thấu kính quang",
+      "must_include_action": "dời cảm biến sang vị trí có nắp che mê cung hoặc thay bằng cảm biến tiệm cận từ chống dầu IP67G",
+      "must_include_contraindication": "không dùng vòi khí nén áp lực cao xịt thẳng vào đầu cảm biến quang"
+    }
+  },
+  {
+    "test_id": "TC-003",
+    "user_role": "Kỹ sư an toàn",
+    "query": "Tại trạm kiểm tra kết hợp gá đặt ngoại quan, công nhân hay bị va chạm khuỷu tay và đau mỏi lưng khi thao tác. Cần cải tiến gì?",
+    "expected_kb_id": "KB-PDS-003",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "khoảng cách thiết kế chưa tính công thái học khi mặc đồ bảo hộ và găng tay dày",
+      "must_include_action": "tịnh tiến đồ gá ra mép bàn 80mm, nghiêng góc 15 độ, bọc đệm mica mềm",
+      "must_include_contraindication": "tuyệt đối không tháo bỏ công tắc hành trình an toàn (interlock)"
+    }
+  },
+  {
+    "test_id": "TC-004",
+    "user_role": "Kỹ thuật viên QC",
+    "query": "Chi tiết nhôm phay CNC bị xước mép khoảng 3.5% trong ca đêm. Dao phay vẫn sắc và máy không rung, nguyên nhân ở đâu?",
+    "expected_kb_id": "KB-QC-004",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "xylanh kẹp xả khí chậm 0.2s do ống dẫn dài, robot đã nâng phôi khi ngàm chưa nhả hết",
+      "must_include_action": "lắp van xả nhanh sát đầu xylanh, bọc đệm nhựa POM đàn hồi, gắn sensor hành trình mở hết",
+      "must_include_contraindication": "không tự ý giảm áp suất kẹp khí nén vì sẽ làm xê dịch phôi khi gia công"
+    }
+  },
+  {
+    "test_id": "TC-005",
+    "user_role": "Công nhân mới",
+    "query": "Tôi mới chuyển sang vận hành máy hàn siêu âm, mỗi lần đổi model gá sản phẩm mới thì mối hàn cứ bị lệch tâm. Xin bí quyết chỉnh gá?",
+    "expected_kb_id": "KB-GMB-005",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "siết ốc vòng tròn làm vênh mặt bích do ứng suất dư",
+      "must_include_action": "dùng lá căn 0.05mm chêm 4 góc, siết đối xứng hình chữ X theo 2 nấc lực cân bằng (5Nm và 10Nm), dùng chốt định vị côn",
+      "must_include_contraindication": "không dùng búa gõ trực tiếp vào gá nhôm"
+    }
+  },
+  {
+    "test_id": "TC-006",
+    "user_role": "Kỹ sư thiết kế máy",
+    "query": "Tôi đang thiết kế bệ đỡ cho cụm gantry tốc độ cao, có lưu ý gì từ thực tế xưởng về độ rung đuôi hành trình không?",
+    "expected_kb_id": "KB-MB-001",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "cộng hưởng dao động ở gốc tai bắt và jerk khi hãm phanh",
+      "must_include_action": "thiết kế gân tăng cứng dạng tam giác, tối ưu khối lượng bằng lỗ giảm chấn, dùng đường cong S-curve",
+      "must_include_contraindication": "không tăng độ dày toàn khối chi tiết nhôm"
+    }
+  },
+  {
+    "test_id": "TC-007",
+    "user_role": "Kỹ sư thiết kế dây chuyền",
+    "query": "Khi bố trí sensor quang trên đường cấp phôi gần cụm motor truyền động, cần phòng tránh vấn đề gì?",
+    "expected_kb_id": "KB-MNT-002",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "luồng gió quạt tản nhiệt cuốn sương dầu bôi trơn bám mờ thấu kính",
+      "must_include_action": "bố trí nắp che bụi mê cung hoặc ưu tiên cảm biến từ IP67G, đặt ở vị trí thuận tiện vệ sinh định kỳ",
+      "must_include_contraindication": "tránh đặt trực diện dưới luồng gió làm mát động cơ"
+    }
+  },
+  {
+    "test_id": "TC-008",
+    "user_role": "Kỹ sư thiết kế đồ gá",
+    "query": "Làm thế nào để thiết kế cơ cấu kẹp khí nén cho chi tiết nhôm chính xác mà không gây rủi ro trầy xước bề mặt khi lấy phôi?",
+    "expected_kb_id": "KB-QC-004",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "độ trễ xả áp suất khí nén khiến robot nhấc phôi khi chấu kẹp chưa mở hoàn toàn",
+      "must_include_action": "tích hợp van xả nhanh tại cổng xylanh, bọc tiếp xúc bằng nhựa POM và thêm interlock sensor mở hết hành trình",
+      "must_include_contraindication": "không dùng mặt kẹp thép trực tiếp tiếp xúc bề mặt nhôm bóng"
+    }
+  },
+  {
+    "test_id": "TC-009",
+    "user_role": "Kỹ sư bảo trì",
+    "query": "Dầu thủy lực của trạm nguồn ép cao áp bị tăng nhiệt độ lên trên 75 độ C sau 3 tiếng vận hành. Cần kiểm tra van điều áp hay bơm?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "chưa có dữ liệu",
+      "must_include_action": "thông báo trong cơ sở tri thức hiện tại chưa có kinh nghiệm ghi nhận về hệ thống dầu thủy lực trạm nguồn",
+      "must_include_contraindication": "không tự suy diễn hoặc bịa đặt thông số khi chưa có dữ liệu chuyên gia"
+    }
+  },
+  {
+    "test_id": "TC-010",
+    "user_role": "Kỹ thuật viên hiện trường",
+    "query": "Máy ép nhiệt bị lỗi sai lệch nhiệt độ giữa 2 nửa khuôn trên dưới quá 10 độ C, cách cân chỉnh bù nhiệt như thế nào?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "chưa có dữ liệu",
+      "must_include_action": "thông báo chưa có bài học hoặc tri thức tương ứng trong kho dữ liệu DENSO",
+      "must_include_contraindication": "không đưa ra hướng dẫn kỹ thuật không có nguồn kiểm chứng"
+    }
+  }
+]

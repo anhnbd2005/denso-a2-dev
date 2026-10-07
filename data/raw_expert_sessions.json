@@ -1,0 +1,16 @@
+[
+  {
+    "session_id": "RAW-SES-001",
+    "source_type": "voice_transcript",
+    "author": "Đặng Văn Hùng (Kỹ thuật viên trưởng)",
+    "date": "2026-10-01",
+    "raw_content": "Sáng nay ca 1 trạm cấp phôi dán tem tự động số 3 cứ chạy được tầm hai chục sản phẩm là kẹt cứng xi-lanh đẩy. Thằng Nam định tháo cả cụm van khí ra bảo dưỡng, tao bảo dừng lại. Nhìn kỹ thì thấy dầu bôi trơn cũ bị keo lại ở thanh trượt dẫn hướng vì ca trước xịt nhầm mỡ bò công nghiệp vào. Tao lấy giẻ tẩm cồn lau sạch hết lớp mỡ cũ, tra lại đúng 3 giọt dầu nhớt trắng chuyên dụng số 10 rồi chỉnh lại áp suất khí nén về đúng 0.45 MPa là chạy mượt re. Nhớ dặn tụi trẻ là cụm này khe hở rất khít chỉ 0.02 ly, tuyệt đối không được dùng mỡ đặc hay xịt RP7 vào, xịt RP7 là trương nở phớt cao su hỏng luôn cả cụm!"
+  },
+  {
+    "session_id": "RAW-SES-002",
+    "source_type": "quick_memo",
+    "author": "Vũ Đình Trọng (Chuyên gia Khuôn dập)",
+    "date": "2026-10-02",
+    "raw_content": "Line dập số 4: Chi tiết nắp chụp bị bavia mép cắt vượt quá 0.08mm. Dao cắt chưa mòn. Nguyên nhân do nhiệt độ dầu bôi trơn dập đầu ca còn lạnh (dưới 25 độ C) làm độ nhớt cao, phôi nhôm bị dính cối. Xử lý: Bật bộ sấy dầu tuần hoàn trước ca chạy 20 phút để dầu đạt 40-45 độ C. Cấm thợ tự ý chỉnh giảm khe hở cối dao (clearance) vì sẽ gây sứt mép dao dập hợp kim!"
+  }
+]

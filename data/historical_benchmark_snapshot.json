@@ -1,0 +1,24 @@
+{
+  "snapshot_id": "validated-final-baseline",
+  "status": "historical",
+  "total_tests": 10,
+  "modes": {
+    "lexical": {
+      "passed": 9,
+      "total": 10
+    },
+    "semantic": {
+      "passed": 8,
+      "total": 10
+    },
+    "hybrid": {
+      "passed": 10,
+      "total": 10,
+      "calibrated": true
+    }
+  },
+  "oos": {
+    "passed": 2,
+    "total": 2
+  }
+}
