@@ -2,13 +2,13 @@
 
 import json
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterator, Optional
 
 from openai import OpenAI
 
 
 DEFAULT_BASE_URL = "http://localhost:20128/v1"
-DEFAULT_MODEL = "ag/gemini-3.8-flash-low"
+DEFAULT_MODEL = "deepseek-v4-flash"
 
 
 class LLMStructuredOutputError(RuntimeError):
@@ -101,6 +101,29 @@ class UniversalLLMClient:
         if content is None:
             raise RuntimeError("OpenAI-compatible API returned empty content.")
         return content
+
+    def generate_stream(
+        self,
+        prompt: str,
+        system_prompt: str,
+        max_tokens: int = 450,
+    ) -> Iterator[str]:
+        stream = self._require_client().chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0,
+            max_tokens=max_tokens,
+            stream=True,
+        )
+        for event in stream:
+            if not event.choices:
+                continue
+            content = event.choices[0].delta.content
+            if content:
+                yield content
 
     @staticmethod
     def _response_format_unsupported(exc: Exception) -> bool:

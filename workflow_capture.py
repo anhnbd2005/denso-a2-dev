@@ -15,7 +15,7 @@ Nhiệm vụ:
 Đọc biên bản làm việc, transcript, ghi chú hoặc nội dung thô
 của chuyên gia và trích xuất thành một KnowledgeItem chuẩn.
 
-Các nguyên tắc bắt buộc:
+Nguyên tắc trích xuất:
 
 1. root_cause_insight
 Phải thể hiện nguyên nhân/bí quyết được hỗ trợ bởi input.
@@ -57,8 +57,8 @@ phải trả về null, không dùng placeholder và không tự thêm tiêu ch�
 
 verification_standard chỉ dùng cho tiêu chí, ngưỡng hoặc quy trình xác minh
 được nguồn nêu rõ. Một kết quả quan sát sau thao tác (ví dụ "máy hết rung")
-không tự động trở thành tiêu chuẩn xác minh. KHÔNG ĐƯỢC BỎ SÓT kết quả quan sát
-này: ghi rõ trong expert_observation dưới dạng "Kết quả quan sát: ..." (hoặc
+không tự động trở thành tiêu chuẩn xác minh. Giữ kết quả quan sát này trong
+expert_observation dưới dạng "Kết quả quan sát: ..." (hoặc
 trong action_solution nếu phù hợp), đồng thời để verification_standard là null
 nếu nguồn không có tiêu chí xác minh chính thức.
 

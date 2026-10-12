@@ -54,6 +54,12 @@ def test_four_page_navigation() -> None:
     assert not app.session_state.search_result["generation_error"]
     assert app.session_state.search_result["source_ids"] == ["KB-MNT-002"]
     assert len(app.session_state.search_llm_client.calls) == 1
+    assert any("Retrieval:" in success.value for success in app.success)
+    assert any("LLM generation:" in caption.value for caption in app.caption)
+    assert any(
+        expander.label == "Tri thức gốc được truy xuất"
+        for expander in app.expander
+    )
     app.run(timeout=120)
     assert len(app.session_state.search_llm_client.calls) == 1
 

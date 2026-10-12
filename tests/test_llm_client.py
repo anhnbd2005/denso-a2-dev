@@ -12,6 +12,12 @@ def response(content):
     )
 
 
+def stream_response(content):
+    return SimpleNamespace(
+        choices=[SimpleNamespace(delta=SimpleNamespace(content=content))]
+    )
+
+
 class FakeCompletions:
     def __init__(self, outputs, reject_json_mode=False):
         self.outputs = list(outputs)
@@ -22,7 +28,10 @@ class FakeCompletions:
         self.calls.append(kwargs)
         if self.reject_json_mode and "response_format" in kwargs:
             raise RuntimeError("response_format is unsupported")
-        return response(self.outputs.pop(0))
+        output = self.outputs.pop(0)
+        if kwargs.get("stream"):
+            return [stream_response(chunk) for chunk in output]
+        return response(output)
 
 
 def configured_client(completions):
@@ -83,6 +92,14 @@ def run_llm_client_tests() -> None:
         )
         assert text_calls.calls[0]["temperature"] == 0
         assert text_calls.calls[0]["max_tokens"] == 321
+
+        stream_calls = FakeCompletions([["Câu ", "trả lời ", "đang stream."]])
+        stream_client = configured_client(stream_calls)
+        assert "".join(
+            stream_client.generate_stream("prompt", "system", max_tokens=222)
+        ) == "Câu trả lời đang stream."
+        assert stream_calls.calls[0]["stream"] is True
+        assert stream_calls.calls[0]["max_tokens"] == 222
 
         native_calls = FakeCompletions(['{"ok": true}'])
         native = configured_client(native_calls)

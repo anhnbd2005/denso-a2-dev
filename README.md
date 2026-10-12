@@ -97,15 +97,13 @@ notepad .env
 ```dotenv
 OPENAI_COMPAT_ENABLED=true
 OPENAI_COMPAT_BASE_URL=https://YOUR_REACHABLE_PROVIDER/v1
-OPENAI_COMPAT_MODEL=ag/gemini-3.8-flash-low
+OPENAI_COMPAT_MODEL=deepseek-v4-flash
 OPENAI_COMPAT_API_KEY=YOUR_PRIVATE_API_KEY
 ```
 
 `run_local.py` ánh xạ `OPENAI_COMPAT_BASE_URL` → `OPENAI_BASE_URL` và `OPENAI_COMPAT_API_KEY` → `OPENAI_API_KEY` cho tiến trình con. Giá trị trong `.env` ghi đè biến môi trường kế thừa; không có giá trị mặc định là endpoint riêng của chủ dự án.
 
 Để mở UI mà không dùng LLM, đặt `OPENAI_COMPAT_ENABLED=false` hoặc chưa tạo `.env`. Khi tắt, launcher loại bỏ `OPENAI_BASE_URL` và `OPENAI_API_KEY` kế thừa khỏi tiến trình con. Kho tri thức và Report vẫn xem được; thao tác extraction hoặc grounded generation sẽ báo lỗi cấu hình rõ ràng và không giả làm kết quả LLM thành công.
-
-Khả năng tương thích API phụ thuộc nhà cung cấp. Endpoint phải là URL HTTP(S), model ID và key phải đúng với provider đó. Model `ag/gemini-3.8-flash-low` đã PASS health check, free-text generation, structured extraction và grounded RAG qua proxy OpenAI-compatible của nhóm ngày 2026-10-12; máy khác vẫn cần endpoint có hỗ trợ đúng model ID này.
 
 ## 9. Chạy ứng dụng
 
@@ -182,7 +180,6 @@ Retrieval latency được đo lại bằng `time.perf_counter()` và không bao
 - Không chia sẻ key qua Git, README, issue hoặc pull request.
 - Không commit `.venv`, cache model, Chroma storage, log hoặc browser profile.
 - Trước khi merge: chạy regression scripts, frozen hash check, `pip check` và UI smoke test.
-- Repository phát triển phải để **Private**; bản public cho giám khảo cần snapshot được audit riêng.
 
 ## 14. Bảo mật và quyền riêng tư
 

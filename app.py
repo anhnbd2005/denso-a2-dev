@@ -1,6 +1,7 @@
 """Streamlit interface for the four core DENSO A2 workflows."""
 
 import json
+import time
 from datetime import date
 from html import escape
 from pathlib import Path
@@ -135,6 +136,80 @@ def render_item(item: KnowledgeItem, score: float | None = None) -> None:
     )
 
 
+def render_retrieval_summary(
+    result: dict,
+    *,
+    expanded: bool = True,
+) -> None:
+    latency_ms = result["retrieval_latency_seconds"] * 1000
+    sources = ", ".join(result["source_ids"])
+    st.success(
+        f"Đã tìm thấy tri thức phù hợp · Retrieval: {latency_ms:.1f} ms · "
+        f"Nguồn: {sources}"
+    )
+    with st.expander("Tri thức gốc được truy xuất", expanded=expanded):
+        for source_item in result["source_items"]:
+            render_item(source_item)
+
+
+def retrieve_for_search_ui(
+    assistant: GroundedHybridAssistant,
+    query: str,
+) -> dict:
+    retrieve_method = getattr(assistant, "retrieve", None)
+    if callable(retrieve_method):
+        return retrieve_method(query)
+
+    retrieval_started = time.perf_counter()
+    matched, metadata = assistant.retriever.search(query)
+    retrieval_latency = time.perf_counter() - retrieval_started
+    if matched is None:
+        return {
+            "query": query,
+            "is_out_of_scope": True,
+            "response_text": "Chưa có tri thức phù hợp trong kho hiện tại.",
+            "source_ids": [],
+            "source_items": [],
+            "retrieval_metadata": metadata,
+            "retrieval_latency_seconds": retrieval_latency,
+            "generation_latency_seconds": None,
+            "generation_error": False,
+            "generation_pending": False,
+        }
+
+    context_items = assistant._select_context_items(matched, metadata)
+    return {
+        "query": query,
+        "is_out_of_scope": False,
+        "response_text": "",
+        "source_ids": [item.knowledge_id for item in context_items],
+        "source_items": context_items,
+        "retrieval_metadata": metadata,
+        "retrieval_latency_seconds": retrieval_latency,
+        "generation_latency_seconds": None,
+        "generation_error": False,
+        "generation_pending": True,
+    }
+
+
+def generate_for_search_ui(
+    assistant: GroundedHybridAssistant,
+    preliminary: dict,
+    on_preview,
+) -> dict:
+    generate_method = getattr(assistant, "generate_from_retrieval", None)
+    if callable(generate_method):
+        return generate_method(preliminary, on_preview=on_preview)
+
+    completed = assistant.ask(preliminary["query"])
+    completed["retrieval_latency_seconds"] = preliminary[
+        "retrieval_latency_seconds"
+    ]
+    completed["retrieval_metadata"] = preliminary["retrieval_metadata"]
+    completed["generation_pending"] = False
+    return completed
+
+
 def render_search_page() -> None:
     section_header(
         "Tra cứu bí quyết chuyên gia",
@@ -155,16 +230,45 @@ def render_search_page() -> None:
         )
     st.caption("Gợi ý: máy rung sau bảo trì · sensor báo sai · CNC xước bề mặt")
     if search_clicked:
+        if not query.strip():
+            st.warning("Vui lòng nhập nội dung cần tra cứu.")
+            return
         client = st.session_state.search_llm_client or UniversalLLMClient()
         assistant = GroundedHybridAssistant(
             retriever=st.session_state.hybrid_retriever,
             llm_client=client,
         )
-        with st.spinner("Đang tổng hợp câu trả lời từ kho tri thức..."):
-            st.session_state.search_result = assistant.ask(query)
-        st.session_state.last_search_latency = st.session_state.search_result[
+        preliminary = retrieve_for_search_ui(assistant, query)
+        st.session_state.search_result = preliminary
+        st.session_state.last_search_latency = preliminary[
             "retrieval_latency_seconds"
         ]
+
+        if preliminary["is_out_of_scope"]:
+            st.info(preliminary["response_text"])
+            return
+
+        render_retrieval_summary(preliminary, expanded=True)
+        st.markdown("### Câu trả lời từ trợ lý tri thức")
+        generation_status = st.info("Trợ lý AI đang tổng hợp câu trả lời…")
+        answer_placeholder = st.empty()
+
+        def show_preview(preview: str) -> None:
+            answer_placeholder.markdown(preview + "  ▌")
+
+        result = generate_for_search_ui(assistant, preliminary, show_preview)
+        st.session_state.search_result = result
+        generation_status.empty()
+        if result["generation_error"]:
+            answer_placeholder.error(result["response_text"])
+        else:
+            answer_placeholder.markdown(result["response_text"])
+            st.caption(
+                "LLM generation: "
+                f"{result['generation_latency_seconds']:.2f} s · "
+                "đo riêng, không thuộc retrieval latency"
+            )
+        return
 
     result = st.session_state.search_result
     if result is None:
@@ -172,15 +276,21 @@ def render_search_page() -> None:
     if result["is_out_of_scope"]:
         st.info(result["response_text"])
         return
+    render_retrieval_summary(result, expanded=True)
+    if result.get("generation_pending"):
+        st.warning("Phiên tạo câu trả lời trước đó đã bị gián đoạn. Vui lòng tra cứu lại.")
+        return
     if result["generation_error"]:
         st.error(result["response_text"])
         return
 
     st.markdown("### Câu trả lời từ trợ lý tri thức")
     st.markdown(result["response_text"])
-    with st.expander("Xem tri thức tham chiếu"):
-        for source_item in result["source_items"]:
-            render_item(source_item)
+    st.caption(
+        "LLM generation: "
+        f"{result['generation_latency_seconds']:.2f} s · "
+        "đo riêng, không thuộc retrieval latency"
+    )
 
 
 def capture_fields(result: CaptureExtractionResult) -> dict:

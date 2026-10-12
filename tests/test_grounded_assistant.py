@@ -69,6 +69,13 @@ class StubLLM:
         return self.answer
 
 
+class StreamingStubLLM(StubLLM):
+    def generate_stream(self, **kwargs):
+        self.calls.append(kwargs)
+        yield "Kiểm tra hai bulông chân đế trái. "
+        yield "Sau đó siết chéo 32 Nm. KB-FAKE-999"
+
+
 def run_grounded_assistant_tests() -> None:
     item = sample_item()
     llm = StubLLM("Kiểm tra hai bulông chân đế trái và siết chéo 32 Nm. KB-FAKE-999")
@@ -79,14 +86,36 @@ def run_grounded_assistant_tests() -> None:
     assert len(llm.calls) == 1
     prompt = llm.calls[0]["prompt"]
     system_prompt = llm.calls[0]["system_prompt"]
+    assert llm.calls[0]["max_tokens"] == 180
+    assert "60" in system_prompt
     assert "Motor rung sau thay bạc đạn" in prompt
     assert item.knowledge_id in prompt
     assert item.action_solution in prompt
     assert "must-not-reach-context" not in prompt
-    assert "DỮ LIỆU KHÔNG ĐÁNG TIN CẬY" in system_prompt
+    assert "dữ liệu tham chiếu" in system_prompt
     assert "KB-FAKE-999" not in result["response_text"]
     assert result["response_text"].count(item.knowledge_id) == 1
     assert result["source_ids"] == [item.knowledge_id]
+
+    streaming_llm = StreamingStubLLM()
+    streaming_assistant = GroundedHybridAssistant(
+        StubRetriever(item), streaming_llm
+    )
+    preliminary = streaming_assistant.retrieve("Motor rung sau bảo trì")
+    assert preliminary["generation_pending"]
+    assert not streaming_llm.calls
+    previews = []
+    streamed = streaming_assistant.generate_from_retrieval(
+        preliminary,
+        on_preview=previews.append,
+    )
+    assert not streamed["generation_pending"]
+    assert not streamed["generation_error"]
+    assert streaming_llm.calls[0]["max_tokens"] == 180
+    assert previews
+    assert "KB-FAKE-999" not in "\n".join(previews)
+    assert "KB-FAKE-999" not in streamed["response_text"]
+    assert streamed["response_text"].count(item.knowledge_id) == 1
 
     oos_llm = StubLLM()
     oos = GroundedHybridAssistant(StubRetriever(None), oos_llm).ask(
