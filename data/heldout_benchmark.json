@@ -1,0 +1,458 @@
+[
+  {
+    "test_id": "HO-001",
+    "user_role": "Kỹ sư vận hành",
+    "query": "Băng tải chạy rung theo từng vòng quay sau khi mới thay vòng bi, phôi nhỏ bị xê dịch. Nguyên nhân là gì?",
+    "expected_kb_id": "KB-MB-002",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "puly lắp lệch tâm",
+      "must_include_action": "làm sạch mặt tựa và kiểm tra độ đảo",
+      "must_include_contraindication": "không chèn đệm mỏng"
+    }
+  },
+  {
+    "test_id": "HO-002",
+    "user_role": "Kỹ sư cơ khí",
+    "query": "Khung thép máy ép có vết nứt nhỏ ở chân mối hàn góc sau vài tháng, xử lý thế nào cho đúng?",
+    "expected_kb_id": "KB-MB-003",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "tải mỏi tại vị trí tập trung ứng suất",
+      "must_include_action": "khoan chặn hai đầu vết nứt rồi hàn lại",
+      "must_include_contraindication": "không hàn đè lên vết nứt"
+    }
+  },
+  {
+    "test_id": "HO-003",
+    "user_role": "Kỹ thuật viên",
+    "query": "Xi-lanh đẩy phôi nghe xì khí ở đầu cần, lực đẩy yếu dần, thay phớt xong vẫn hỏng lại.",
+    "expected_kb_id": "KB-MB-004",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "xi-lanh lắp lệch trục",
+      "must_include_action": "canh lại đồng trục",
+      "must_include_contraindication": "không chỉ thay phớt"
+    }
+  },
+  {
+    "test_id": "HO-004",
+    "user_role": "Kỹ sư bảo trì",
+    "query": "Trục X của máy lắp ráp kêu khô và dừng lệch dần, ray có vẻ thiếu mỡ.",
+    "expected_kb_id": "KB-MB-005",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "chu kỳ bơm mỡ không phù hợp điều kiện bụi",
+      "must_include_action": "rút ngắn chu kỳ bơm mỡ",
+      "must_include_contraindication": "không trộn hai loại mỡ"
+    }
+  },
+  {
+    "test_id": "HO-005",
+    "user_role": "Kỹ sư bảo dưỡng",
+    "query": "Cảm biến tiệm cận ở trạm dập báo sai vào buổi chiều nóng nhưng đêm lại bình thường.",
+    "expected_kb_id": "KB-MNT-003",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "nhiệt độ làm trôi ngưỡng",
+      "must_include_action": "dời cảm biến xa khuôn hoặc thêm tấm chắn nhiệt",
+      "must_include_contraindication": "không tăng độ nhạy"
+    }
+  },
+  {
+    "test_id": "HO-006",
+    "user_role": "Tổ trưởng bảo trì",
+    "query": "Áp suất khí cuối đường chỉ còn 0.4 MPa dù máy nén đặt 0.7, có phải đường ống rò không?",
+    "expected_kb_id": "KB-MNT-004",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "lõi lọc bão hòa gây trở lực",
+      "must_include_action": "thay lõi lọc và xả cốc lọc",
+      "must_include_contraindication": "không tăng áp máy nén"
+    }
+  },
+  {
+    "test_id": "HO-007",
+    "user_role": "Kỹ thuật viên",
+    "query": "Động cơ trục chính cứ chạy hai giờ là báo quá nhiệt, nghỉ chút lại chạy tiếp.",
+    "expected_kb_id": "KB-MNT-005",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "bụi chặn đường gió làm mát",
+      "must_include_action": "vệ sinh cánh quạt và lưới chắn",
+      "must_include_contraindication": "không thổi khí áp cao vào cuộn dây"
+    }
+  },
+  {
+    "test_id": "HO-008",
+    "user_role": "Kỹ sư điện",
+    "query": "Servo thỉnh thoảng báo lỗi encoder rồi tự hết, cáp encoder đi chung máng với cáp động lực.",
+    "expected_kb_id": "KB-MNT-006",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "nhiễu cảm ứng từ cáp động lực",
+      "must_include_action": "tách riêng cáp encoder",
+      "must_include_contraindication": "không nối lớp bọc hai đầu"
+    }
+  },
+  {
+    "test_id": "HO-009",
+    "user_role": "Kỹ sư bảo dưỡng",
+    "query": "Trục quay phân độ bị lệch dần mỗi ca và nghe tiếng lạch cạch từ đai truyền động.",
+    "expected_kb_id": "KB-MNT-007",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "lực căng đai thấp",
+      "must_include_action": "đo và chỉnh lực căng đai",
+      "must_include_contraindication": "không căng đai quá mức"
+    }
+  },
+  {
+    "test_id": "HO-010",
+    "user_role": "Kỹ thuật viên",
+    "query": "Bơm chân không hút yếu, phôi nặng bị rơi, dầu bơm nhìn đục như sữa.",
+    "expected_kb_id": "KB-MNT-008",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "dầu bơm nhiễm nước và bụi",
+      "must_include_action": "thay dầu và lọc khí thải",
+      "must_include_contraindication": "không châm dầu lên dầu bẩn"
+    }
+  },
+  {
+    "test_id": "HO-011",
+    "user_role": "Kỹ sư công đoạn",
+    "query": "Người vận hành phải xoay người và bước thêm nhiều lần để lấy linh kiện, chu kỳ trạm vượt takt.",
+    "expected_kb_id": "KB-PDS-004",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "pallet bố trí không theo thao tác",
+      "must_include_action": "sắp lại pallet trong tầm với",
+      "must_include_contraindication": "không chắn lối thoát hiểm"
+    }
+  },
+  {
+    "test_id": "HO-012",
+    "user_role": "Kỹ sư an toàn",
+    "query": "Công nhân lắp ráp tinh hay đau vai và cổ vì bàn thao tác cố định, người thấp phải nhón tay.",
+    "expected_kb_id": "KB-PDS-005",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "bàn cố định không tính chiều cao nhân sự",
+      "must_include_action": "dùng bàn nâng hạ",
+      "must_include_contraindication": "không kê vật lạ"
+    }
+  },
+  {
+    "test_id": "HO-013",
+    "user_role": "Kỹ sư an toàn",
+    "query": "Rèm quang an toàn cửa ô robot đặt gần quá, người có thể chạm vùng nguy hiểm trước khi robot dừng.",
+    "expected_kb_id": "KB-PDS-006",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "tính khoảng cách bằng thời gian dừng không tải",
+      "must_include_action": "đo lại thời gian dừng với tải lớn nhất",
+      "must_include_contraindication": "không tắt vùng mù"
+    }
+  },
+  {
+    "test_id": "HO-014",
+    "user_role": "Quản lý kho",
+    "query": "Linh kiện lô cũ nằm sâu trong kệ cấp liệu đến khi quá hạn mới phát hiện.",
+    "expected_kb_id": "KB-PDS-007",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "kệ không tách đường nạp và lấy",
+      "must_include_action": "chuyển sang kệ con lăn FIFO",
+      "must_include_contraindication": "không dùng lô mới trước"
+    }
+  },
+  {
+    "test_id": "HO-015",
+    "user_role": "Kỹ sư chuyền",
+    "query": "Trạm bắt vít có chu kỳ dài hơn hẳn các trạm khác nên sản phẩm ứ lại phía trước.",
+    "expected_kb_id": "KB-PDS-008",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "phân bổ việc không đều giữa các trạm",
+      "must_include_action": "chuyển bớt thao tác phụ sang trạm trước",
+      "must_include_contraindication": "không ép tốc độ nhân sự"
+    }
+  },
+  {
+    "test_id": "HO-016",
+    "user_role": "Kỹ thuật viên QC",
+    "query": "Cuối ca mép chi tiết nhôm sắc và có bavia dài khoảng 0.2 mm, dao có lớp nhôm dính.",
+    "expected_kb_id": "KB-QC-005",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "dao mòn dính nhôm",
+      "must_include_action": "thay dao theo số chi tiết",
+      "must_include_contraindication": "không mài tay khi trục quay"
+    }
+  },
+  {
+    "test_id": "HO-017",
+    "user_role": "Kỹ sư QC",
+    "query": "Đường kính chi tiết tiện trôi dần trong hai giờ đầu ca rồi ổn định.",
+    "expected_kb_id": "KB-QC-006",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "chưa cân bằng nhiệt đầu ca",
+      "must_include_action": "chạy khởi động nóng 20 phút",
+      "must_include_contraindication": "không chỉnh offset liên tục"
+    }
+  },
+  {
+    "test_id": "HO-018",
+    "user_role": "Kỹ sư QC",
+    "query": "Vài vỏ nhựa cảm biến bong mối hàn khi thử kéo, vết hàn không đều và có chỗ cháy nhẹ.",
+    "expected_kb_id": "KB-QC-007",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "biên độ hàn trôi do đầu hàn mòn",
+      "must_include_action": "kiểm tra đầu nối và thay đầu hàn",
+      "must_include_contraindication": "không tăng thời gian hàn"
+    }
+  },
+  {
+    "test_id": "HO-019",
+    "user_role": "Kỹ sư QC",
+    "query": "Thỉnh thoảng lắp nhầm hai loại gioăng chỉ khác một con số nhỏ trên nhãn.",
+    "expected_kb_id": "KB-QC-008",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "nhận diện phụ thuộc đọc nhãn nhỏ",
+      "must_include_action": "dùng đồ gá chống nhầm",
+      "must_include_contraindication": "không chỉ nhắc nhở"
+    }
+  },
+  {
+    "test_id": "HO-020",
+    "user_role": "Kỹ thuật viên đo",
+    "query": "Cùng một chi tiết nhưng kết quả đo ba chiều mỗi lần mỗi khác, đầu dò có lớp dầu mỏng.",
+    "expected_kb_id": "KB-QC-009",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "dầu cắt sót làm đầu dò trượt",
+      "must_include_action": "rửa sấy khô chi tiết trước khi đo",
+      "must_include_contraindication": "không đo khi còn nóng và dính dầu"
+    }
+  },
+  {
+    "test_id": "HO-021",
+    "user_role": "Tổ trưởng",
+    "query": "Cứ mỗi lần sửa máy gấp lại mất thời gian tìm cờ lê và tua vít trong tủ dụng cụ lộn xộn.",
+    "expected_kb_id": "KB-GMB-006",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "không có vị trí quy định cho dụng cụ",
+      "must_include_action": "lắp bảng bóng dụng cụ",
+      "must_include_contraindication": "không cấm mượn mà thiếu sổ"
+    }
+  },
+  {
+    "test_id": "HO-022",
+    "user_role": "Quản lý ca",
+    "query": "Ca đêm gặp lại đúng lỗi ca ngày đã xử lý nhưng sổ bàn giao chỉ ghi sản lượng.",
+    "expected_kb_id": "KB-GMB-007",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "biểu mẫu thiếu mục sự cố",
+      "must_include_action": "đổi biểu mẫu bàn giao",
+      "must_include_contraindication": "không bàn giao chỉ bằng miệng"
+    }
+  },
+  {
+    "test_id": "HO-023",
+    "user_role": "Công nhân",
+    "query": "Máng rung cấp vít dừng khoảng mười lần mỗi ca vì vít kẹt ở chỗ cong, tôi tự gỡ bằng tay.",
+    "expected_kb_id": "KB-GMB-008",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "điểm cong làm vít chồng nhau",
+      "must_include_action": "sửa bán kính cong hoặc thêm gạt vít",
+      "must_include_contraindication": "không đưa tay khi chưa khóa năng lượng"
+    }
+  },
+  {
+    "test_id": "HO-024",
+    "user_role": "Kỹ sư cải tiến",
+    "query": "Đổi khuôn ép nhựa mất 50 phút, phần lớn thời gian máy đứng để chuẩn bị dụng cụ và gia nhiệt khuôn.",
+    "expected_kb_id": "KB-GMB-009",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "chưa tách việc trong máy và ngoài máy",
+      "must_include_action": "chuyển việc chuẩn bị ra ngoài máy",
+      "must_include_contraindication": "không bỏ bước kiểm tra khóa khuôn"
+    }
+  },
+  {
+    "test_id": "HO-025",
+    "user_role": "Quản lý sản xuất",
+    "query": "Có ca bỏ sót kiểm tra mức dầu và áp suất đầu ca vì checklist toàn chữ quá dài.",
+    "expected_kb_id": "KB-GMB-010",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "checklist toàn chữ khó theo dõi",
+      "must_include_action": "chuyển sang checklist hình ảnh",
+      "must_include_contraindication": "không ký xác nhận trước khi kiểm tra"
+    }
+  },
+  {
+    "test_id": "HO-026",
+    "user_role": "Kỹ sư thiết kế",
+    "query": "Cánh tay gắp nhôm rung lắc khi phanh gấp ở tốc độ chu kỳ nhanh, linh kiện nhỏ bị văng ra.",
+    "expected_kb_id": "KB-MB-001",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "cộng hưởng do tai bắt nhôm dài thiếu gân",
+      "must_include_action": "bổ sung gân tăng cứng và S-curve",
+      "must_include_contraindication": "không tăng bề dày toàn bộ"
+    }
+  },
+  {
+    "test_id": "HO-027",
+    "user_role": "Kỹ sư bảo dưỡng",
+    "query": "Đèn cảm biến quang sợi ở đường cấp phôi chớp tắt vài tuần một lần, thay mới vẫn bị lại.",
+    "expected_kb_id": "KB-MNT-002",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "bụi dầu bám thấu kính do luồng gió quạt",
+      "must_include_action": "dời cảm biến hoặc dùng loại chống dầu",
+      "must_include_contraindication": "không xịt khí nén áp cao"
+    }
+  },
+  {
+    "test_id": "HO-028",
+    "user_role": "Kỹ sư an toàn",
+    "query": "Trạm kiểm tra thủ công bị chật, khuỷu tay va vào đồ gá và lưng đau khi mang găng dày.",
+    "expected_kb_id": "KB-PDS-003",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "khoảng cách chưa tính công thái học",
+      "must_include_action": "tịnh tiến đồ gá ra mép bàn",
+      "must_include_contraindication": "không tháo công tắc an toàn"
+    }
+  },
+  {
+    "test_id": "HO-029",
+    "user_role": "Kỹ thuật viên QC",
+    "query": "Chi tiết nhôm của van điều áp bị trầy xước nhẹ khi robot thả khỏi chấu kẹp vào ca đêm.",
+    "expected_kb_id": "KB-QC-004",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "nhả phôi tự động gây trầy",
+      "must_include_action": "điều chỉnh van xả nhanh và lót chấu kẹp",
+      "must_include_contraindication": "không kẹp chặt hơn"
+    }
+  },
+  {
+    "test_id": "HO-030",
+    "user_role": "Công nhân mới",
+    "query": "Đổi model sang gá mới trên máy hàn siêu âm làm mối hàn bị lệch tâm, nên canh lại thế nào?",
+    "expected_kb_id": "KB-GMB-005",
+    "is_out_of_scope": false,
+    "rubric": {
+      "must_include_root_cause": "gá canh chưa đúng khi chuyển đổi chủng loại",
+      "must_include_action": "cân chỉnh gá theo quy trình changeover",
+      "must_include_contraindication": "không bỏ qua bước xác nhận"
+    }
+  },
+  {
+    "test_id": "HO-031",
+    "user_role": "Kỹ sư vận hành",
+    "query": "Cách lập trình ladder cho PLC Siemens để đếm sản phẩm qua cảm biến là gì?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-032",
+    "user_role": "Nhân sự",
+    "query": "Chế độ nghỉ phép và lương thưởng cuối năm của công nhân nhà máy được tính như thế nào?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-033",
+    "user_role": "Kỹ sư bảo trì",
+    "query": "Robot hàn hồ quang bị lỗi khí che chắn làm mối hàn rỗ khí, cần chỉnh lưu lượng khí argon bao nhiêu?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-034",
+    "user_role": "Kỹ sư mạng",
+    "query": "Cấu hình VLAN và firewall cho mạng nhà máy như thế nào để tách vùng điều khiển?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-035",
+    "user_role": "Kỹ thuật viên",
+    "query": "Cách chọn kích thước bulông chịu lực cắt cho kết cấu thép của nhà xưởng mới là gì?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-036",
+    "user_role": "Kỹ sư vận hành",
+    "query": "Quy trình hiệu chuẩn cân điện tử trong phòng thí nghiệm hóa chất gồm những bước nào?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-037",
+    "user_role": "Người dùng chung",
+    "query": "Hôm nay thời tiết ở Hà Nội thế nào và có nên mang ô khi đi làm không?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  },
+  {
+    "test_id": "HO-038",
+    "user_role": "Kỹ sư phần mềm",
+    "query": "Làm sao tối ưu truy vấn SQL chậm trên bảng dữ liệu sản xuất có hàng triệu dòng?",
+    "expected_kb_id": null,
+    "is_out_of_scope": true,
+    "rubric": {
+      "must_include_root_cause": "không có trong cơ sở tri thức",
+      "must_include_action": "từ chối trả lời",
+      "must_include_contraindication": null
+    }
+  }
+]
