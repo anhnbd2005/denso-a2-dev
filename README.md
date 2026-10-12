@@ -21,10 +21,10 @@ Nguyên mẫu không bao gồm Interview, Governance, hàng đợi phê duyệt 
 ## 2. Kiến trúc hiện tại
 
 - **Capture:** LLM OpenAI-compatible bóc tách ghi chú tự do thành bản nháp `KnowledgeItem`; người dùng kiểm tra/sửa rồi mới lưu. CSV/XLSX dùng bộ nhập có validation.
-- **Knowledge Base:** dữ liệu frozen được nạp đầu phiên; bản ghi capture/import bổ sung trong `st.session_state`.
+- **Knowledge Base:** 30 thẻ synthetic frozen (5 thẻ nền + 25 thẻ mở rộng) được nạp đầu phiên; bản ghi capture/import bổ sung trong `st.session_state`.
 - **Hybrid retrieval:** BM25 và semantic vector retrieval, hợp nhất bằng Reciprocal Rank Fusion (RRF), sau đó áp dụng cổng out-of-scope (OOS) trước generation.
 - **Grounded generation:** câu hỏi gốc và `KnowledgeItem` được retrieve được gửi tới cùng OpenAI-compatible client. LLM chỉ được phép dùng evidence đã cung cấp; source ID được kiểm tra và gắn bằng chương trình.
-- **Evaluation:** evaluator chạy trên frozen KB và benchmark phát triển cố định.
+- **Evaluation:** evaluator chạy riêng benchmark phát triển 10 câu và held-out nội bộ 38 câu trên corpus 30 thẻ, không trộn hai loại bằng chứng.
 
 LLM thật được dùng ở hai điểm: trích xuất có cấu trúc trong **Thu thập** và tạo câu trả lời có căn cứ trong **Tra cứu**. Embedding model của semantic retrieval là thành phần riêng, không phải generation LLM.
 
@@ -60,7 +60,7 @@ retriever.py            # Lexical baseline
 rag_engine.py           # Engine RAG thử nghiệm riêng
 assistant.py            # Hybrid RAG orchestration, grounded prompt và source validation
 knowledge_graph.py      # Knowledge Map HTML/CSS
-reporting.py            # Benchmark frozen và đo retrieval latency
+reporting.py            # Benchmark phát triển, held-out nội bộ và retrieval latency
 operational_metrics.py  # Tính toán scenario có nhãn bằng chứng
 ui_components.py        # Sidebar, hero và style dùng chung
 run_local.py            # Nạp .env cục bộ rồi chạy Streamlit
@@ -97,7 +97,7 @@ notepad .env
 ```dotenv
 OPENAI_COMPAT_ENABLED=true
 OPENAI_COMPAT_BASE_URL=https://YOUR_REACHABLE_PROVIDER/v1
-OPENAI_COMPAT_MODEL=YOUR_MODEL_ID
+OPENAI_COMPAT_MODEL=ag/gemini-3.8-flash-low
 OPENAI_COMPAT_API_KEY=YOUR_PRIVATE_API_KEY
 ```
 
@@ -105,7 +105,7 @@ OPENAI_COMPAT_API_KEY=YOUR_PRIVATE_API_KEY
 
 Để mở UI mà không dùng LLM, đặt `OPENAI_COMPAT_ENABLED=false` hoặc chưa tạo `.env`. Khi tắt, launcher loại bỏ `OPENAI_BASE_URL` và `OPENAI_API_KEY` kế thừa khỏi tiến trình con. Kho tri thức và Report vẫn xem được; thao tác extraction hoặc grounded generation sẽ báo lỗi cấu hình rõ ràng và không giả làm kết quả LLM thành công.
 
-Khả năng tương thích API phụ thuộc nhà cung cấp. Endpoint phải là URL HTTP(S), model ID và key phải đúng với provider đó.
+Khả năng tương thích API phụ thuộc nhà cung cấp. Endpoint phải là URL HTTP(S), model ID và key phải đúng với provider đó. Model `ag/gemini-3.8-flash-low` đã PASS health check, free-text generation, structured extraction và grounded RAG qua proxy OpenAI-compatible của nhóm ngày 2026-10-12; máy khác vẫn cần endpoint có hỗ trợ đúng model ID này.
 
 ## 9. Chạy ứng dụng
 
@@ -128,6 +128,7 @@ Test được tổ chức thành các module standalone. Chạy lệnh từ proj
 ```powershell
 $env:HF_HUB_OFFLINE="1"
 $env:TRANSFORMERS_OFFLINE="1"
+$env:PYTHONIOENCODING="utf-8"
 Get-ChildItem tests\test_*.py | ForEach-Object {
     .\.venv\Scripts\python.exe -m "tests.$($_.BaseName)"
 }
@@ -136,6 +137,7 @@ Get-ChildItem tests\test_*.py | ForEach-Object {
 .\.venv\Scripts\python.exe evaluate_usefulness.py
 .\.venv\Scripts\python.exe evaluate_rag.py
 .\.venv\Scripts\python.exe evaluate_hybrid.py
+.\.venv\Scripts\python.exe evaluate_heldout.py
 .\.venv\Scripts\python.exe -m pip check
 ```
 
@@ -158,11 +160,19 @@ Không dùng dummy credential để tuyên bố REAL PASS. `tests/test_grounded_
 | Semantic | 8/10 (80%) |
 | Hybrid | 10/10 (100%) — đã hiệu chỉnh trên chính bộ phát triển |
 
-Các số này đo hợp đồng retrieval/evaluator đã thiết lập, không phải accuracy của câu trả lời LLM. Chúng cũng không phải benchmark chính thức của DENSO, production accuracy hay bằng chứng tổng quát hóa. OOS chỉ có bằng chứng từ bộ test phát triển hiện tại.
+Các số này đo hợp đồng retrieval/evaluator đã thiết lập, không phải accuracy của câu trả lời LLM. Chúng cũng không phải benchmark chính thức của DENSO, production accuracy hay bằng chứng tổng quát hóa.
+
+Đánh giá held-out nội bộ dùng `data/mock_knowledge.json` cùng `data/extended_knowledge.json`, tổng cộng 30 thẻ synthetic. `data/heldout_benchmark.json` gồm 30 câu trong phạm vi và 8 câu ngoài phạm vi; ngưỡng OOS 0,55 được giữ nguyên, không hiệu chỉnh lại trên bộ này. Chạy bằng:
+
+```powershell
+.\.venv\Scripts\python.exe evaluate_heldout.py
+```
+
+Kết quả đã tái lập: **26/30 top-1 trong phạm vi, 8/8 OOS, tổng 34/38**. Bốn trường hợp chưa đạt là `HO-009`, `HO-014`, `HO-017` và `HO-021`. Đây là held-out do đội xây dựng trên dữ liệu synthetic, không phải đánh giá độc lập hoặc dữ liệu sản xuất của DENSO.
 
 ## 12. Báo cáo và giả định vận hành
 
-`reporting.py` luôn chạy benchmark trên frozen KB; item capture/import trong session không tham gia. Snapshot lịch sử trong `data/historical_benchmark_snapshot.json` được hiển thị tách biệt với kết quả chạy mới.
+`reporting.py` giữ benchmark phát triển 10 câu trên 5 thẻ nền để so sánh với snapshot lịch sử, đồng thời cung cấp benchmark held-out 38 câu trên đầy đủ 30 thẻ synthetic. Item capture/import trong session không tham gia các benchmark. Snapshot lịch sử trong `data/historical_benchmark_snapshot.json` được hiển thị tách biệt với kết quả chạy mới.
 
 Retrieval latency được đo lại bằng `time.perf_counter()` và không bao gồm LLM latency, thời gian con người chẩn đoán hoặc hiệu quả vận hành nhà máy. Ví dụ **45 phút / 1,5 phút = 30×** được ghi nhãn **GIẢ ĐỊNH**; đó không phải baseline hay cải thiện thực tế do DENSO xác nhận.
 
@@ -182,7 +192,7 @@ Retrieval latency được đo lại bằng `time.perf_counter()` và không bao
 
 - Bản ghi thêm mới chỉ sống trong Streamlit session, chưa có persistence production.
 - Semantic embedding model/cache và generation LLM endpoint phụ thuộc môi trường từng máy.
-- OOS threshold và benchmark cần được xác thực độc lập trên dữ liệu mới.
+- Held-out hiện là benchmark nội bộ synthetic; OOS threshold và kết quả vẫn cần được xác thực độc lập trên dữ liệu mới hoặc dữ liệu đã được DENSO phê duyệt.
 - Không cam kết tương thích với mọi OpenAI-compatible provider.
 - Grounded prompt và numerical guard giảm rủi ro nhưng không bảo đảm tuyệt đối không hallucination.
 - Chưa xác minh triển khai on-premise hoặc hiệu quả vận hành thực tế.

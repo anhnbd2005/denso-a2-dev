@@ -29,6 +29,7 @@ def test_four_page_navigation() -> None:
         str(PROJECT_ROOT / "app.py"), default_timeout=120
     ).run()
     assert_clean(app)
+    assert len(app.session_state.kb_items) == 30
 
     expected = {
         "nav_search": "Tra cứu",
@@ -57,8 +58,8 @@ def test_four_page_navigation() -> None:
     assert len(app.session_state.search_llm_client.calls) == 1
 
     app.text_input(key="search_query").set_value(
-        "Dầu thủy lực của trạm nguồn ép cao áp bị tăng nhiệt độ lên trên "
-        "75 độ C sau 3 tiếng vận hành. Cần kiểm tra van điều áp hay bơm?"
+        "Chế độ nghỉ phép và lương thưởng cuối năm của công nhân nhà máy "
+        "được tính như thế nào?"
     ).run(timeout=120)
     app.button(key="search_submit").click().run(timeout=120)
     assert_clean(app)
@@ -76,9 +77,12 @@ def test_four_page_navigation() -> None:
     assert "Báo cáo đánh giá" in report_markup
     assert "Benchmark phát triển" in report_markup
     assert "Kịch bản hiệu quả dự kiến" in report_markup
+    assert "Held-out nội bộ" in report_markup
+    assert "30 thẻ tri thức synthetic" in report_markup
     assert "GIẢ ĐỊNH" in report_markup
     assert "Kết quả lịch sử đã xác thực" in report_captions
     assert app.button(key="run_report_benchmark").label == "Chạy lại đánh giá"
+    assert app.button(key="run_report_heldout").label == "Chạy held-out"
     assert app.button(key="measure_report_latency").label == "Đo ngay"
 
     app.button(key="nav_knowledge").click().run(timeout=120)

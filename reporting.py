@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 from evaluate_hybrid import run_hybrid_evaluation
+from evaluate_heldout import run_heldout_evaluation
 from evaluate_rag import run_rag_evaluation
 from evaluate_usefulness import run_evaluation
 from hybrid_retriever import HybridKnowledgeRetriever
@@ -17,13 +18,31 @@ from hybrid_retriever import HybridKnowledgeRetriever
 APP_DIR = Path(__file__).resolve().parent
 DATA_DIR = APP_DIR / "data"
 KB_PATH = DATA_DIR / "mock_knowledge.json"
+EXTENDED_KB_PATH = DATA_DIR / "extended_knowledge.json"
 BENCHMARK_PATH = DATA_DIR / "test_benchmark.json"
+HELDOUT_BENCHMARK_PATH = DATA_DIR / "heldout_benchmark.json"
 SNAPSHOT_PATH = DATA_DIR / "historical_benchmark_snapshot.json"
 
 
 def _load_benchmark_rows() -> List[Dict[str, Any]]:
     with BENCHMARK_PATH.open(encoding="utf-8") as file:
         return json.load(file)
+
+
+def load_heldout_manifest() -> Dict[str, int]:
+    """Return auditable corpus sizes for the internal held-out evaluation."""
+    with KB_PATH.open(encoding="utf-8") as file:
+        base_items = json.load(file)
+    with EXTENDED_KB_PATH.open(encoding="utf-8") as file:
+        extended_items = json.load(file)
+    with HELDOUT_BENCHMARK_PATH.open(encoding="utf-8") as file:
+        cases = json.load(file)
+    return {
+        "kb_items": len(base_items) + len(extended_items),
+        "questions": len(cases),
+        "in_scope": sum(not row.get("is_out_of_scope", False) for row in cases),
+        "oos": sum(bool(row.get("is_out_of_scope", False)) for row in cases),
+    }
 
 
 def _with_percentages(summary: Dict[str, Any]) -> Dict[str, Any]:
@@ -130,6 +149,35 @@ def run_frozen_benchmark() -> Dict[str, Any]:
         "latency": summarize_latency(
             [float(row["latency_ms"]) for row in hybrid]
         ),
+    }
+
+
+def run_heldout_benchmark() -> Dict[str, Any]:
+    """Run the untuned internal held-out retrieval benchmark."""
+    manifest = load_heldout_manifest()
+    results = _run_quietly(run_heldout_evaluation)
+    if len(results) != manifest["questions"]:
+        raise ValueError("Held-out evaluator output does not match its benchmark")
+
+    in_scope = [row for row in results if not row["out_of_scope"]]
+    oos = [row for row in results if row["out_of_scope"]]
+    failures = [row for row in results if not row["correct"]]
+    distances_in = [row["distance"] for row in in_scope if row["distance"] is not None]
+    distances_oos = [row["distance"] for row in oos if row["distance"] is not None]
+    return {
+        "kind": "internal_heldout",
+        **manifest,
+        "in_scope_passed": sum(bool(row["correct"]) for row in in_scope),
+        "oos_passed": sum(bool(row["correct"]) for row in oos),
+        "overall_passed": sum(bool(row["correct"]) for row in results),
+        "failures": failures,
+        "latency": summarize_latency(
+            [float(row["latency_ms"]) for row in results]
+        ),
+        "distance": {
+            "max_in_scope": max(distances_in),
+            "min_oos": min(distances_oos),
+        },
     }
 
 

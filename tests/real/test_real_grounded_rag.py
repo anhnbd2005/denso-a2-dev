@@ -22,6 +22,12 @@ EXPECTED_HASHES = {
     "data/test_benchmark.json": (
         "AAB15F735848ED05E41AA0ED1E8F811E82C8E396FBC34B0DF310CFCF9F2696DA"
     ),
+    "data/extended_knowledge.json": (
+        "AC8186BDAD87AB261B9DB1E0B5522171CBEC0DF356C6E847555F55C8B962F259"
+    ),
+    "data/heldout_benchmark.json": (
+        "F7502464060C36F0CC1FBB2B40B12218296ABA586F671A850342E567C232ABFD"
+    ),
 }
 
 MOTOR_NOTE = (
@@ -46,6 +52,14 @@ def sha256(path: str) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest().upper()
 
 
+def load_full_seed_kb() -> list[KnowledgeItem]:
+    items = []
+    for path in ("data/mock_knowledge.json", "data/extended_knowledge.json"):
+        with Path(path).open(encoding="utf-8") as file:
+            items.extend(KnowledgeItem(**row) for row in json.load(file))
+    return items
+
+
 def assert_no_forbidden_claims(answer: str) -> None:
     normalized = answer.casefold()
     for forbidden in (
@@ -63,7 +77,7 @@ def run_real_grounded_rag_tests() -> None:
     if real_client.client is None:
         raise RuntimeError("Real API configuration is required")
 
-    retriever = HybridKnowledgeRetriever()
+    retriever = HybridKnowledgeRetriever(items=load_full_seed_kb())
     recorder = RecordingClient(real_client)
     assistant = GroundedHybridAssistant(retriever, recorder)
 
@@ -80,11 +94,11 @@ def run_real_grounded_rag_tests() -> None:
     )
     calls_after_in_scope = len(recorder.calls)
 
-    with Path("data/test_benchmark.json").open(encoding="utf-8") as file:
+    with Path("data/heldout_benchmark.json").open(encoding="utf-8") as file:
         oos_queries = [
             row["query"] for row in json.load(file) if row.get("is_out_of_scope")
         ]
-    assert len(oos_queries) == 2
+    assert len(oos_queries) == 8
     for query in oos_queries:
         result = assistant.ask(query)
         assert result["is_out_of_scope"]
@@ -128,7 +142,8 @@ def run_real_grounded_rag_tests() -> None:
     assert_no_forbidden_claims(motor_answer["response_text"])
 
     missing = assistant.ask(
-        "Tiêu chuẩn độ rung tối đa được phép sau khi thay bạc đạn là bao nhiêu?"
+        "Với motor băng tải số 2 có hai bulông chân đế trái bị lỏng và đã "
+        "siết chéo 32 Nm, tiêu chuẩn độ rung tối đa được phép là bao nhiêu?"
     )
     assert not missing["generation_error"]
     assert missing["source_ids"] == [motor_item.knowledge_id]
@@ -173,7 +188,7 @@ def run_real_grounded_rag_tests() -> None:
 
     print("[PASS] REAL GROUNDED HYBRID RAG")
     print(f"Model: {real_client.model_name}")
-    print(f"Generation calls: {len(recorder.calls)} | OOS LLM calls: 0/2")
+    print(f"Generation calls: {len(recorder.calls)} | OOS LLM calls: 0/8")
     print(
         "Generation latency seconds: "
         f"sensor={in_scope['generation_latency_seconds']:.3f} "

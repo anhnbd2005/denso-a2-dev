@@ -14,6 +14,8 @@ def run_hybrid_tests() -> None:
     second = HybridKnowledgeRetriever()
     assert len(first.kb_items) == 5
     assert len(second.kb_items) == 5
+    assert first.storage_collection_name != second.storage_collection_name
+    assert first.indexed_ids() == second.indexed_ids()
 
     empty_item, empty_meta = first.search("   ")
     assert empty_item is None

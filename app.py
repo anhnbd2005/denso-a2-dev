@@ -15,9 +15,11 @@ from knowledge_graph import build_selected_knowledge_map, render_knowledge_map
 from llm_client import UniversalLLMClient
 from operational_metrics import load_operational_metric
 from reporting import (
+    load_heldout_manifest,
     load_historical_benchmark,
     measure_frozen_hybrid_latency,
     run_frozen_benchmark,
+    run_heldout_benchmark,
 )
 from schema import CaptureExtractionResult, DomainEnum, KnowledgeItem
 from ui_components import inject_styles, render_hero, render_sidebar, section_header
@@ -38,8 +40,11 @@ inject_styles()
 
 @st.cache_data
 def load_initial_items() -> list[KnowledgeItem]:
-    with (DATA_DIR / "mock_knowledge.json").open(encoding="utf-8") as file:
-        return [KnowledgeItem(**row) for row in json.load(file)]
+    items = []
+    for filename in ("mock_knowledge.json", "extended_knowledge.json"):
+        with (DATA_DIR / filename).open(encoding="utf-8") as file:
+            items.extend(KnowledgeItem(**row) for row in json.load(file))
+    return items
 
 
 def initialize_state() -> None:
@@ -58,6 +63,7 @@ def initialize_state() -> None:
         "search_llm_client": None,
         "knowledge_map_item_id": None,
         "report_benchmark_results": None,
+        "report_heldout_results": None,
         "report_latency": None,
     }
     for key, value in defaults.items():
@@ -524,6 +530,49 @@ def _report_detail_table_html(rows: list[dict]) -> str:
     )
 
 
+def _heldout_summary_html(results: dict) -> str:
+    cards = (
+        ("Top-1 trong phạm vi", results["in_scope_passed"], results["in_scope"]),
+        ("Từ chối ngoài phạm vi", results["oos_passed"], results["oos"]),
+        ("Kết quả chung", results["overall_passed"], results["questions"]),
+    )
+    rendered = []
+    for index, (label, passed, total) in enumerate(cards):
+        modifier = " report-metric--hybrid" if index == 2 else ""
+        percentage = 100.0 * passed / total
+        rendered.append(
+            f'<div class="report-metric{modifier}">'
+            f'<div class="report-metric__label">{escape(label)}</div>'
+            f'<div class="report-metric__value">{percentage:.1f}%</div>'
+            f'<div class="report-metric__note">{passed} / {total} câu đạt</div>'
+            "</div>"
+        )
+    return '<div class="report-grid">' + "".join(rendered) + "</div>"
+
+
+def _heldout_failure_table_html(rows: list[dict]) -> str:
+    rendered_rows = []
+    for row in rows:
+        expected = visible(row.get("expected"))
+        retrieved = visible(row.get("retrieved"))
+        distance = row.get("distance")
+        distance_text = "N/A" if distance is None else f"{distance:.4f}"
+        rendered_rows.append(
+            "<tr>"
+            f'<td><strong>{escape(row["test_id"])}</strong></td>'
+            f"<td>{escape(expected)}</td>"
+            f"<td>{escape(retrieved)}</td>"
+            f"<td>{distance_text}</td>"
+            "</tr>"
+        )
+    return (
+        '<div class="report-table-wrap"><table class="report-table">'
+        "<thead><tr><th>Mã câu hỏi</th><th>Kỳ vọng</th>"
+        "<th>Kết quả</th><th>Cosine distance</th></tr></thead>"
+        f'<tbody>{"".join(rendered_rows)}</tbody></table></div>'
+    )
+
+
 def _vi_number(value: float) -> str:
     text = f"{value:g}"
     return text.replace(".", ",")
@@ -595,6 +644,57 @@ def render_report_page() -> None:
         )
     else:
         st.markdown(_report_detail_table_html(fresh["rows"]), unsafe_allow_html=True)
+
+    heldout_manifest = load_heldout_manifest()
+    heldout = st.session_state.report_heldout_results
+    st.markdown(
+        '<div class="report-head"><h3>Kiểm tra trên câu hỏi mới</h3>'
+        '<span class="report-badge">Held-out nội bộ</span></div>'
+        f'<p class="report-copy">{heldout_manifest["questions"]} câu hỏi chưa dùng để hiệu chỉnh '
+        f'ngưỡng, chạy trên {heldout_manifest["kb_items"]} thẻ tri thức synthetic.</p>',
+        unsafe_allow_html=True,
+    )
+    if st.button(
+        "Chạy lại held-out" if heldout else "Chạy held-out",
+        key="run_report_heldout",
+    ):
+        try:
+            with st.spinner("Đang chạy benchmark held-out..."):
+                heldout = run_heldout_benchmark()
+            st.session_state.report_heldout_results = heldout
+            st.rerun()
+        except Exception as exc:
+            st.error(f"Không thể hoàn tất held-out benchmark: {exc}")
+    if heldout is None:
+        st.markdown(
+            '<div class="report-empty">Bộ đánh giá đã sẵn sàng: '
+            f'{heldout_manifest["in_scope"]} câu trong phạm vi và '
+            f'{heldout_manifest["oos"]} câu ngoài phạm vi. '
+            'Chọn “Chạy held-out” để đo lại bằng code hiện tại.</div>',
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(_heldout_summary_html(heldout), unsafe_allow_html=True)
+        st.caption(
+            f'Độ trễ retrieval-only: trung bình {heldout["latency"]["mean_ms"]:.1f} ms · '
+            f'trung vị {heldout["latency"]["median_ms"]:.1f} ms · '
+            f'ngưỡng OOS không hiệu chỉnh lại: 0,55'
+        )
+        if heldout["failures"]:
+            st.markdown(
+                '<div class="report-head"><h3>Các trường hợp chưa đạt</h3></div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown(
+                _heldout_failure_table_html(heldout["failures"]),
+                unsafe_allow_html=True,
+            )
+        st.markdown(
+            '<div class="report-disclosure"><strong>Phạm vi bằng chứng:</strong> '
+            'Đây là benchmark nội bộ trên dữ liệu synthetic, không phải benchmark chính thức '
+            'của DENSO hay accuracy trong môi trường sản xuất.</div>',
+            unsafe_allow_html=True,
+        )
 
     st.markdown(
         '<div class="report-head"><h3>Hiệu năng tra cứu</h3></div>'

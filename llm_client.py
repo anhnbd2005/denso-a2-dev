@@ -8,7 +8,7 @@ from openai import OpenAI
 
 
 DEFAULT_BASE_URL = "http://localhost:20128/v1"
-DEFAULT_MODEL = "ag/gemini-3.6-flash-low"
+DEFAULT_MODEL = "ag/gemini-3.8-flash-low"
 
 
 class LLMStructuredOutputError(RuntimeError):

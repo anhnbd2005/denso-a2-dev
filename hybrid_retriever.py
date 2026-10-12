@@ -5,6 +5,7 @@ import math
 import os
 import re
 from collections import Counter
+from itertools import count
 from typing import Any, Dict, List, Optional, Tuple
 
 import chromadb
@@ -25,6 +26,7 @@ class HybridKnowledgeRetriever:
     """Field-weighted BM25 and cosine-vector rankings fused with RRF."""
 
     _embedding_models: Dict[str, SentenceTransformer] = {}
+    _collection_sequence = count()
 
     def __init__(
         self,
@@ -43,6 +45,9 @@ class HybridKnowledgeRetriever:
             "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         )
         self.collection_name = "denso_hybrid_kb"
+        self.storage_collection_name = (
+            f"{self.collection_name}_{next(self._collection_sequence)}"
+        )
         self.collection_lifecycle = "Chroma ephemeral/in-memory"
 
         if items is None:
@@ -67,7 +72,7 @@ class HybridKnowledgeRetriever:
             )
         )
         self.collection = self.client.get_or_create_collection(
-            name=self.collection_name,
+            name=self.storage_collection_name,
             metadata={"hnsw:space": "cosine"},
             embedding_function=None,
         )

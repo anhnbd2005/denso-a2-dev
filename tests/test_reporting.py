@@ -5,15 +5,21 @@ from pathlib import Path
 
 from reporting import (
     BENCHMARK_PATH,
+    EXTENDED_KB_PATH,
+    HELDOUT_BENCHMARK_PATH,
     KB_PATH,
+    load_heldout_manifest,
     load_historical_benchmark,
     measure_frozen_hybrid_latency,
     run_frozen_benchmark,
+    run_heldout_benchmark,
 )
 
 
 EXPECTED_KB_HASH = "33A1702DCDB518D978E2DF5A8F53E2A6F645302374203D9237115FAA18BD57C8"
 EXPECTED_BENCHMARK_HASH = "AAB15F735848ED05E41AA0ED1E8F811E82C8E396FBC34B0DF310CFCF9F2696DA"
+EXPECTED_EXTENDED_KB_HASH = "AC8186BDAD87AB261B9DB1E0B5522171CBEC0DF356C6E847555F55C8B962F259"
+EXPECTED_HELDOUT_HASH = "F7502464060C36F0CC1FBB2B40B12218296ABA586F671A850342E567C232ABFD"
 
 
 def file_hash(path: Path) -> str:
@@ -60,10 +66,31 @@ def run_reporting_tests() -> None:
     assert measured["median_ms"] > 0
     assert measured["minimum_ms"] <= measured["maximum_ms"]
 
+    manifest = load_heldout_manifest()
+    assert manifest == {
+        "kb_items": 30,
+        "questions": 38,
+        "in_scope": 30,
+        "oos": 8,
+    }
+    heldout = run_heldout_benchmark()
+    assert heldout["in_scope_passed"] == 26
+    assert heldout["oos_passed"] == 8
+    assert heldout["overall_passed"] == 34
+    assert {row["test_id"] for row in heldout["failures"]} == {
+        "HO-009",
+        "HO-014",
+        "HO-017",
+        "HO-021",
+    }
+    assert heldout["latency"]["sample_count"] == 38
+
     assert file_hash(KB_PATH) == EXPECTED_KB_HASH
     assert file_hash(BENCHMARK_PATH) == EXPECTED_BENCHMARK_HASH
+    assert file_hash(EXTENDED_KB_PATH) == EXPECTED_EXTENDED_KB_HASH
+    assert file_hash(HELDOUT_BENCHMARK_PATH) == EXPECTED_HELDOUT_HASH
     print("[PASS] REPORT PAGE EVIDENCE TESTS")
-    print("Historical 90/80/100 | fresh rows=10 | OOS=2/2")
+    print("Historical 90/80/100 | held-out 26/30 + OOS 8/8 = 34/38")
     print(
         f"Measured retrieval: n={measured['sample_count']} "
         f"mean={measured['mean_ms']:.3f} ms "
